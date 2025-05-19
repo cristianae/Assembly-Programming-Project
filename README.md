@@ -8,8 +8,15 @@ In this project I wrote an assembly language program that converts a two digit o
 Cristiana Eagen
 
 # Built with:
-Custom Assembly Language
-Assembler.jar simulator
+- Custom Assembly Language
+- Assembler.jar simulator
+
+# Details:
+  - ASCII-to-decimal conversion
+  - Octal-to-decimal logic
+  - Division using subtraction loops
+  - Conditional branching using: `SZA` - Skip if AC is zero, `SNA` – Skip if AC is negative, `SPA` – Skip if AC is positive
+  - Used `BSA` to call these two subroutines: CHECKFIVE and CHECKTHREE
 
 # How to run the code:
 - Download and open Assembler.jar
