@@ -1,4 +1,4 @@
-# Assembly-Programming-Project
+# Assembly-Language-Project
 An assembly program that converts two-digit octal input to decimal and displays it only if it's a multiple of 3 or 5.
 
 # Description:
@@ -14,8 +14,8 @@ Assembler.jar simulator
 # How to run the code:
 - Download and open Assembler.jar
 - Clone the repository
-- Navigate into the src folder → 'cd src'
-- Load Assembly_language_program.txt in the Source Program panel.
+- Navigate into the src folder → `cd src`
+- Load `Assembly_language_program.txt` in the Source Program panel.
 - Compile the code: Tools → Compile.
 - Enter an octal number in the Input Stream.
 - Run the program via Tools → Execute → Run and take a look at the output.
