@@ -4,7 +4,7 @@ An assembly program that converts two-digit octal input to decimal and displays 
 ## Description:
 In this project I wrote an assembly language program that converts a two digit octal number into its decimal equivalent. The program will then display the results only if the decimal number is a multiple of 3 or 5. Otherwise, it outputs 0. This was completed as part of my Computer Organization project. 
 
-# Author:
+## Author:
 Cristiana Eagen
 
 ## Built with:
