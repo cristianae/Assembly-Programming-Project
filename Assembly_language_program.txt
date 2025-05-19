@@ -1,0 +1,159 @@
+    ORG 10
+
+A, SKI       				// look for input
+    BUN A   				// no input, clear to avoid issues
+    CLA       				// clear AC
+    INP       				// input to AC
+    STA INPUT1  			//Stores the first input or the first octal digit
+    
+B, SKI      				// looks for the second input
+    BUN B   				// no input, clear to avoid issues
+    CLA       				// clear AC
+    INP 	       			// input to AC
+    STA INPUT2  			// stores the second input or the second octal digit
+
+INPUT1, DEC 0   			// stores the first input in the memory location INPUT1, it gets initialized to dec 0
+INPUT2, DEC 0 				// stores the second input in the memory location INPUT2, it gets initialized to dec 0
+
+							// convert the input two digit octal digits to decimal by subtracting 48, then combine the values
+NUMBER, DEC -48  			// decimal digit -48 I will use to convert from octal to decimal 
+	CLA						// clear AC
+	LDA INPUT1          	// loads the first digit
+	ADD NUMBER
+	STA DECIMAL1    		//first digit as a decimal gets stored
+	
+	CLA						// clear AC
+	LDA INPUT2    			// loads the second digit
+	ADD NUMBER
+	STA DECIMAL2  			//second digit as a decimal gets stored
+
+DECIMAL1, DEC 0   	    	//stores the first digit after converting to decimal equivalent, it gets initialized to dec 0
+DECIMAL2, DEC 0    			//stores the second digit after converting to decimal equivalent, it gets initialized to dec 0
+	CLE	  					//clears the carryovers
+	CLA						// clear AC
+	LDA DECIMAL1
+	CIL DECIMAL1	    	//this is the same as multiplying the first digit by 8(or 8^1)
+	CIL DECIMAL1	    	// CIL is put 3 times because its the same as multiplying by 2
+	CIL DECIMAL1
+	STA OCTAL1
+	CLA						// clear AC
+	LDA OCTAL1
+	ADD DECIMAL2			//combining the two values to get the octal equivalent result in decimal
+	STA OCTALRESULT
+	BSA CHECKFIVE 			//goes to subroutine CHECKFIVE
+
+COMPARE1, DEC 0             //used to store values after adding 5 when checking for multiplicity, it gets initialized to dec 0
+COMPARE2, DEC 0				//used to store values after adding 3 when checking for multiplicity, it gets initialized to dec 0
+FIVE, DEC 5                 //dec value, intitialized to dec 5
+THREE, DEC 3				//dec value, intitialized to dec 3
+OCTAL1, DEC 0               //stores the octal conversion for the first digit, it gets initialized to dec 0
+OCTALRESULT, DEC 0			//octal value combined, intitialized to dec 0
+
+							//check to see if a value is a multiple of 3 or 5, values are intitialized to help
+NEG_FIVE, DEC -5            //used in the process of checking if a value is a multiple, it gets initialized to dec -5
+NEG_THREE, DEC -3			////used in the process of checking if a value is a multiple, it gets initialized to dec -3
+
+							//the strategy that this method implements is that five will be subtracted until it reaches a negative 
+							//value, once that happens add five to get either a zero or a positive value which will indicate if it's 
+							//a multiple or not (for example: if the value is 10: 10-5 = 5 then 5-5= 0 then 0-5=-5 then 5 is added making
+							//it 0 again which means its a multiple)
+
+CHECKFIVE, HEX 0  			//stores the return address, points to the other reference above
+	   CLA					// clear AC
+	   LDA OCTALRESULT
+LOOP1, ADD NEG_FIVE         //loop repeats adding negative 5 until it reaches a negative value
+	   STA REMAINDER1
+	   CLA					// clear AC
+	   LDA REMAINDER1
+	   SNA              	//if neg skip next line, its put at the end because you don't want to repeat
+	   BUN LOOP1  			//goes to the top = loop, how to continue the loop
+	   CLA					// clear AC
+       LDA REMAINDER1
+	   ADD FIVE				//adds five to check if multiple, if zero then yes, if positive value then no
+	   STA COMPARE1 
+	   SZA   		    	//if it's zero skip next line
+	   BSA CHECKTHREE   	//goes to subroutine CHECKTHREE
+	   SNA      	    	//if neg skip next line
+       BSA MULTIPLE
+BUN CHECKFIVE 		    	// how you exit subtroutine
+	   
+	   						//the strategy that this method implements is that three will be subtracted until it reaches a negative 
+							//value, once that happens add three to get either a zero or a positive value which will indicate if it's 
+							//a multiple or not (for example value is 7: 7-3 = 4 then 4-3= 1 then 1-3=--2 then 3 is added making it 1
+							//which means its not a multiple since zero is not reached but a positive value)
+							
+CHECKTHREE, HEX 0			//stores the address
+		CLA					// clear AC
+        LDA OCTALRESULT
+LOOP2,  ADD NEG_THREE      //loop repeats adding negative 3 until it reaches a negative value
+	    STA REMAINDER2
+		CLA					// clear AC
+	    LDA REMAINDER2
+	    SNA              	//if neg skip next line; its put at the end because you don't want to repeat
+	    BUN LOOP2
+		CLA					// clear AC
+	    LDA REMAINDER2
+	    ADD THREE			//adds five to check if multiple, if zero then yes, if positive value then no
+	    STA COMPARE2
+	    SZA   				//if it's zero skip next line
+	    BSA NOT_MULTIPLE
+	    SNA      			//if neg skip next line
+        BSA MULTIPLE
+BUN CHECKTHREE  			// how you exit subroutine 
+	      
+REMAINDER1, DEC 0           // dec used when storing the first digit remainder, its intitialized to dec 0 
+REMAINDER2, DEC 0			// dec used when storing the second digit remainder, its intitialized to dec 0 
+
+MULTIPLE, HEX 0             //stores the address
+		 CLA				// clear AC
+		 LDA OCTALRESULT
+LOOP3,  ISZ COUNTER         //increment the counter which is the first character
+		ADD NEG_TEN         //coverts to dec/char to output
+		STA REMAINDER       //the remainder is the second character; need to split the first and second digit
+		SNA 			    //if neg skip next line
+		BUN LOOP3
+		BSA ENDFOUND
+		BSA PRINT
+
+PRINT, HEX 0  				//stores the address
+		CLA					// clear AC
+		LDA COUNTER
+		ADD NEG_ONE         //add -1 because the counter from loop3 includes a one even when it reaches negative value
+		ADD FOURTY_EIGHT
+		STA COUNTER
+		LOOP4, SKO			//using loop and SKO helps solve the problem when entering same values after each run 							and getting a different random output 
+		BUN LOOP4
+		OUT 				//prints out the counter in decimal which is the first digit
+		CLA					// clear AC
+		LDA REMAINDER
+		ADD FOURTY_EIGHT
+		LOOP5, SKO			//using loop and SKO helps solve the problem when entering same values after each run 							and getting a different random output 
+		BUN LOOP5
+		OUT					//prints out the remainder in decimal which is the second digit
+		HLT   				//quit
+
+							//output each character one by one
+							//if a negative is reached when splitting the two digit, it will go to ENDFOUND 
+ENDFOUND, HEX 0				//stores the address
+		  CLA          		// clear AC  
+		  LDA REMAINDER		
+		  ADD TEN			// once it reaches a negative value, adding 10 will make it go back to positive since that's the value that is being wanted
+		  STA REMAINDER
+		  BSA PRINT         // goes to the print subroutine
+
+
+NOT_MULTIPLE, HEX 0  		//stores the address 
+	      LDA ZERO
+	      OUT				// prints out zero if octal value is not a multiple
+	      HLT 				//quit
+
+ZERO, DEC 48               //this is zero in char and is used for conversion (used in the NOT_MULTIPLE subroutine), its initialized to dec 48
+NEG_TEN, DEC -10           //used to split the digits, its intialized to dec -10
+COUNTER, DEC 0			   //used for finding the first dec digit, its initialized to dec 0
+REMAINDER, DEC 0		   //used for finding the second dec digit, its initialized to dec 0
+TEN, DEC 10                //gets the remainder back when it reaches a negative value, its initialized to dec 10
+NEG_ONE, DEC -1            //used for adding -1 due to an extra one in the counter from loop3, its initialized to dec -1
+FOURTY_EIGHT, DEC 48	   //this is zero in char and is used for conversion, its initialized to dec 48
+
+
+	END
