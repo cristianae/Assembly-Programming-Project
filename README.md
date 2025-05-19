@@ -21,7 +21,7 @@ Assembler.jar simulator
 - Run the program via Tools → Execute → Run and take a look at the output.
 
 # Example:
-Input: 43 (octal)
-Decimal: 35 → Output: 35
-Input: 10 (octal)
-Decimal: 8 → Not a multiple → Output: 0
+- Input: 43 (octal)
+- Decimal: 35 → Output: 35
+- Input: 10 (octal)
+- Decimal: 8 → Not a multiple → Output: 0
